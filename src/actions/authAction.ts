@@ -2,21 +2,37 @@
 
 import { auth } from "@/lib/firebase";
 import { authSchema } from "@/utils/formSchema";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { redirect } from "next/navigation";
+import { AuthMsg } from "@/utils/types";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
-export const authByEmail = (state: string | null, fd: FormData) => {
+export const authByEmail = (state: AuthMsg, fd: FormData): AuthMsg => {
   const email = fd.get("email")?.toString();
   const password = fd.get("password")?.toString();
   try {
-    const { email: emailOk, password: passwordOk } = authSchema.parse({
+    state = authSchema.parse({
       email,
       password,
     });
-
-    createUserWithEmailAndPassword(auth, emailOk, passwordOk);
-    redirect("/");
-  } catch (e: any) {
-    return { ...e };
+  } catch (err) {
+    return {
+      email: "有効なメールアドレスを入力してください。",
+      password: "パスワードは、8文字以上で英数字を含めてください。",
+    };
   }
+
+  const { email: emailOk, password: passwordOk } = state;
+
+  if (auth.currentUser?.email === email) {
+    signInWithEmailAndPassword(auth, emailOk, passwordOk);
+  } else {
+    createUserWithEmailAndPassword(auth, emailOk, passwordOk);
+  }
+
+  return {
+    email: "OK",
+    password: "OK",
+  };
 };

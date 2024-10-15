@@ -1,107 +1,95 @@
 "use client";
-
+import { authByEmail } from "@/actions/authAction";
 import { Button } from "@/components/ui/button";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { auth } from "@/lib/firebase";
-import { authSchema } from "@/utils/formSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { redirect } from "next/navigation";
-import { useState } from "react";
-import { Form, useForm } from "react-hook-form";
-import { z } from "zod";
+import { Label } from "@/components/ui/label";
+import { empty } from "@/utils/global";
+import { IconProps } from "@/utils/types";
+import { ReactNode, useState } from "react";
+import { useFormState } from "react-dom";
+
+const Danger = ({ children }: { children: ReactNode }) => (
+  <p className='text-red-800 font-medium text-lg'>{children}</p>
+);
+
+function EyeIcon({
+  seeableProp,
+  props,
+}: {
+  seeableProp: boolean;
+  props: IconProps;
+}) {
+  return seeableProp ? (
+    <svg
+      {...props}
+      xmlns='http://www.w3.org/2000/svg'
+      width='24'
+      height='24'
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth='2'
+      strokeLinecap='round'
+      strokeLinejoin='round'>
+      <path d='M18 6 6 18' />
+      <path d='m6 6 12 12' />
+    </svg>
+  ) : (
+    <svg
+      {...props}
+      xmlns='http://www.w3.org/2000/svg'
+      width='24'
+      height='24'
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth='2'
+      strokeLinecap='round'
+      strokeLinejoin='round'>
+      <path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z' />
+      <circle cx='12' cy='12' r='3' />
+    </svg>
+  );
+}
 
 const EmailAuth = () => {
-  const form = useForm<z.infer<typeof authSchema>>({
-    resolver: zodResolver(authSchema),
+  const [seeable, setSeeable] = useState(false);
+  const [msg, action] = useFormState(authByEmail, {
+    email: "",
+    password: "",
   });
 
-  const [seeable, setSeeable] = useState(false);
-
-  const emailSignIn = (email: string, password: string) => {
-    try {
-      createUserWithEmailAndPassword(auth, email, password);
-    } catch (e) {
-      try {
-        signInWithEmailAndPassword(auth, email, password);
-      } catch (e2) {
-        console.error(`${e}
-          ${e2}
-          is happened`);
-        return;
-      }
-    }
-
-    redirect("/");
-  };
   return (
-    <div>
-      <Form {...form}>
-        <form
-          onSubmit={() =>
-            form.handleSubmit(({ email, password }) =>
-              emailSignIn(email, password)
-            )
-          }>
-          <FormField
-            control={form.control}
-            name='email'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>メールアドレス</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder='Enter Email Address'
-                    {...field}
-                    name='email'
-                  />
-                </FormControl>
-                <FormDescription>非公開の認証用メールアドレス</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
+    <div className='w-screen h-screen flex flex-col justify-center items-center'>
+      <form
+        action={action}
+        className='flex flex-col items-center justify-center w-3/4'>
+        <div className='flex justify-center items-center p-3'>
+          <Label>メールアドレス</Label>
+          <Input name='email' type='email' placeholder='Enter your email' />
+        </div>
+        <Danger>{empty(msg.email, null)}</Danger>
+        <div className='flex justify-center items-center p-3'>
+          <Label>強固なパスワード (8文字以上で英数字含む)</Label>
+          <Input
+            placeholder='Enter strong password'
             name='password'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>パスワード</FormLabel>
-                <FormControl>
-                  <Input
-                    type={seeable ? "text" : "password"}
-                    placeholder='Enter Strong Password'
-                    {...field}
-                    name='password'
-                  />
-                  <span
-                    onClick={() => setSeeable(!seeable)}
-                    className='w-9 rounded-md mx-2 flex justify-center items-center cursor-pointer bg-slate-100'>
-                    {seeable ? "X" : "👁"}
-                  </span>
-                </FormControl>
-                <FormDescription>
-                  8文字以上で英数字の強力なパスワード。
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+            type={seeable ? "text" : "password"}
           />
-          <Button type='submit'>送信</Button>
-        </form>
-      </Form>
+          <EyeIcon
+            props={{
+              className: "w-12 h-12 m-2 p-2 text-muted-foreground",
+              onClick() {
+                setSeeable(!seeable);
+              },
+            }}
+            seeableProp={seeable}
+          />
+        </div>
+        <Danger>{empty(msg.password, null)}</Danger>
+
+        <Button className='m-3 px-8'>サインイン</Button>
+      </form>
     </div>
   );
 };
