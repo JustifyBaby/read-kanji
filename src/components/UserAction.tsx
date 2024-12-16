@@ -1,47 +1,34 @@
-"use client";
-
-import { useAuthState } from "react-firebase-hooks/auth";
 import { Button } from "./ui/button";
-import { auth } from "@/lib/firebase";
-import { API_URL } from "@/utils/global";
 import TrashBox from "./icon/TrashBox";
+import { deletePost, highRated } from "@/actions/userAction";
+import { auth } from "@clerk/nextjs/server";
 
 interface Props {
-  id: number;
+  id: string;
   authorId: string;
-  highRater: string[];
+  good: string[];
 }
 
-const UserAction = ({ id, authorId, highRater }: Props) => {
-  const [session] = useAuthState(auth);
-  const deletePost = async () => {
-    await fetch(`${API_URL}/${id}`, {
-      method: "DELETE",
-    });
-  };
-
-  const highRated = async () => {
-    await fetch(`${API_URL}/eval/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({ authorId }),
-    });
-  };
-
-  return session?.uid === authorId ? (
-    <div>
+const UserAction = async ({ id, authorId, good }: Props) => {
+  const session = await auth();
+  return session.userId === authorId ? (
+    <form action={deletePost}>
       <Button
-        onClick={deletePost}
+        name='deleteBtn'
+        value={id}
         variant={"secondary"}
         className='flex justify-center items-center'>
         <TrashBox />
         削除
       </Button>
-    </div>
+    </form>
   ) : (
-    <div>
-      <Button onClick={highRated}>&hearts;</Button>
-      <p>{highRater.length}</p>
-    </div>
+    <form action={highRated}>
+      <Button name='eval' value={JSON.stringify({ id, authorId })}>
+        &hearts;
+      </Button>
+      <p>{good.length}</p>
+    </form>
   );
 };
 

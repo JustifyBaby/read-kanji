@@ -1,26 +1,20 @@
 import { SVGProps } from "react";
 
-type IconProps = SVGProps<SVGSVGElement>;
+export type IconProps = SVGProps<SVGSVGElement>;
 
-type AuthMsg = {
+export type AuthMsg = {
   email: string;
   password: string;
 };
 
-type UserRead = {
-  id?: number;
-  author: string;
-  authorId: string;
-  kanji: string;
-  read: string;
-  highRater?: string[];
-  createdAt?: Date;
-};
-
-type RouteParam = {
+export type RouteParam = {
   params: {
     id: string;
   };
 };
 
-export type { IconProps, AuthMsg, UserRead, RouteParam };
+export type CreateAction = {
+  status: "init" | "success" | "error";
+  message?: string;
+  redirectTo?: string;
+};

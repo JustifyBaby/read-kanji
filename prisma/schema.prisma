@@ -9,11 +9,11 @@ datasource db {
 }
 
 model UserRead {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   author String
   authorId String
   kanji String
   read String
-  highRater String[]
+  good String[]
   createdAt DateTime @default(now())
 }
