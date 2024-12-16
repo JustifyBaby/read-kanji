@@ -36,5 +36,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-firebase.ts
-edit
+./src/lib/firebase.ts
+edit/*/**
+./src/app/edit
