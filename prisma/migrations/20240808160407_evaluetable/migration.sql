@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "UserRead" ADD COLUMN     "good" INTEGER NOT NULL DEFAULT 0;
