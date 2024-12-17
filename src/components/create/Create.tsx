@@ -35,7 +35,7 @@ const Create = () => {
 
   useEffect(() => {
     if (state.status === "success" && state.redirectTo) {
-      router.push("/");
+      router.push(state.redirectTo);
     }
   }, [state, router]);
 

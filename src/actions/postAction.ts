@@ -37,7 +37,6 @@ export const postAction = async (
       },
     });
     revalidatePath("/");
-    NextResponse.redirect(process.env.NEXT_REDIRECT!);
     return { status: "success", redirectTo: "/" };
   } catch (err) {
     console.error(err);
