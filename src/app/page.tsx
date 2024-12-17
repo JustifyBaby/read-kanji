@@ -7,9 +7,6 @@ export default async function Home() {
 
   return (
     <div className='w-full flex flex-col justify-center items-center'>
-      {process.env.NEXT_PUBLIC_ALLOW_PATHS!.split(",").map((path) => (
-        <>{path}</>
-      ))}
       <Link href={"/create"}>新規投稿</Link>
       <ul className='w-full grid p-2 m-4'>
         {contents.map(
