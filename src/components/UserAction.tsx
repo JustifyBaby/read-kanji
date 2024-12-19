@@ -24,7 +24,10 @@ const UserAction = async ({ id, authorId, good }: Props) => {
     </form>
   ) : (
     <form action={highRated}>
-      <Button name='eval' value={JSON.stringify({ id, authorId })}>
+      <Button
+        className='p-2 m-2'
+        name='eval'
+        value={JSON.stringify({ id, authorId })}>
         &hearts;
       </Button>
       <p>{good.length}</p>
