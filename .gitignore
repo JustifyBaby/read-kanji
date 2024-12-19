@@ -38,6 +38,6 @@ next-env.d.ts
 
 firebase.ts
 src/app/edit/[id]/page.tsx
-src/components/create/kanji-lists.json
-prisma
-src/middleware.ts
+# src/components/create/kanji-lists.json
+# prisma
+# src/middleware.ts
