@@ -36,14 +36,18 @@ const UserAction = ({ session, id, authorId, good }: Props) => {
         </form>
       ) : (
         <form action={highRated} className='flex justify-center items-center'>
-          <Button
-            className='px-4 py-2 m-3'
-            disabled={good.includes(session!)}
-            variant={good.includes(session!) ? "ghost" : "default"}
-            name='eval'
-            value={JSON.stringify({ id, raterId: session } as ActionParam)}>
-            &hearts;
-          </Button>
+          {session ? (
+            <Button
+              className='px-4 py-2 m-3'
+              disabled={good.includes(session!)}
+              variant={good.includes(session!) ? "ghost" : "default"}
+              name='eval'
+              value={JSON.stringify({ id, raterId: session } as ActionParam)}>
+              &hearts;
+            </Button>
+          ) : (
+            <></>
+          )}
           <p>{good.length}</p>
         </form>
       )}
