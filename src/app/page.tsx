@@ -22,11 +22,15 @@ export default async function Home({ searchParams }: QueryParam) {
   return (
     <div className='w-full flex flex-col justify-center items-center'>
       <div className='flex justify-center items-center'>
-        <Link
-          href={"/user-page/?id=0"}
-          className='m-2 p-1 underline text-lg text-blue-400'>
-          あなたのページ
-        </Link>
+        {userId ? (
+          <Link
+            href={"/user-page/?id=0"}
+            className='m-2 p-1 underline text-lg text-blue-400'>
+            あなたのページ
+          </Link>
+        ) : (
+          <></>
+        )}
       </div>
       <ul className='grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3'>
         {contents.map(
