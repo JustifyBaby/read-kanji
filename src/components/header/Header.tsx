@@ -33,7 +33,7 @@ const Header = () => {
       </div> */}
       <Link
         href={"/create"}
-        className='text-lg mx-2 bg-sky-200 px-4 py-2 rounded-md hover:text-red-500 hover:shadow'>
+        className='text-lg mx-2 mt-5 bg-sky-200 px-10 py-2 rounded-md hover:text-red-500 hover:shadow'>
         新規投稿
       </Link>
     </header>
