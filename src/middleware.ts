@@ -2,14 +2,15 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const isProtectedRoute = createRouteMatcher("/");
+const isProtectedRoute = createRouteMatcher(["/", "/policy", "/rule"]);
 
 export const matchWithQuery = (req: NextRequest) => {
   const { url } = req;
+
   try {
     // `createRouteMatcher`で基本のパスをマッチング
     const isPathMatched = isProtectedRoute(req);
-    if (!isPathMatched) return false;
+    if (isPathMatched) return true;
 
     // URLをパースしてクエリパラメータを取得
     const { searchParams } = req.nextUrl; // new URL(url, process.env.NEXT_PUBLIC_ORIGIN); // ダミーのベースURLを追加

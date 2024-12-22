@@ -2,6 +2,7 @@ import UserAction from "@/components/UserAction";
 import prisma from "@/utils/db";
 import { ITEMS_PER_PAGE } from "@/utils/global";
 import { QueryParam } from "@/utils/types";
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { DetailedHTMLProps, LiHTMLAttributes, ReactNode } from "react";
 
@@ -20,22 +21,26 @@ const Li = (props: Props) => (
 
 export default async function Home({ searchParams }: QueryParam) {
   const { id } = await searchParams;
-  const total = await prisma.userRead.count();
 
   const skip = Number(id) * ITEMS_PER_PAGE;
-
-  const contents = await prisma.userRead.findMany({
-    skip,
-    take: ITEMS_PER_PAGE,
-  });
+  const [contents, total] = await prisma.$transaction([
+    prisma.userRead.findMany({ skip, take: ITEMS_PER_PAGE }),
+    prisma.userRead.count(),
+  ]);
 
   const pageSize = Math.ceil(total / ITEMS_PER_PAGE);
 
-  console.log(pageSize);
+  const { userId } = await auth();
 
   return (
     <div className='w-full flex flex-col justify-center items-center'>
-      <h2 className='text-center p-1 m-2'>他のユーザーの投稿</h2>
+      <div className='flex justify-center items-center'>
+        <Link
+          href={"/user-page/?id=0"}
+          className='m-2 p-1 underline text-lg text-blue-400'>
+          あなたのページ
+        </Link>
+      </div>
       <ul className='grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3'>
         {contents.map(
           ({ id, author, kanji, read, createdAt, authorId, good }) => (
@@ -55,7 +60,12 @@ export default async function Home({ searchParams }: QueryParam) {
                 <span className='text-base text-gray-400'>
                   {createdAt.toLocaleDateString()}
                 </span>
-                <UserAction id={id} authorId={authorId} good={good} />
+                <UserAction
+                  session={userId}
+                  id={id}
+                  authorId={authorId}
+                  good={good}
+                />
               </div>
             </li>
           )
