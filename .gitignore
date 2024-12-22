@@ -37,7 +37,6 @@ yarn-error.log*
 next-env.d.ts
 
 firebase.ts
-src/app/edit/[id]/page.tsx
-# src/components/create/kanji-lists.json
-# prisma
-# src/middleware.ts
+
+src/app/policy/*
+src/app/rule/*

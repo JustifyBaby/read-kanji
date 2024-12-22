@@ -18,7 +18,7 @@ const Header = () => {
           </SignedIn>
         </div>
 
-        <Link href={"/"}>
+        <Link href={"/?id=0"}>
           <h1 className='text-2xl font-bold'>変な熟語ゲーム</h1>
         </Link>
       </div>
@@ -31,6 +31,7 @@ const Header = () => {
           利用規約
         </Link>
       </div> */}
+
       <Link
         href={"/create"}
         className='text-lg mx-2 mt-5 bg-sky-200 px-10 py-2 rounded-md hover:text-red-500 hover:shadow'>
