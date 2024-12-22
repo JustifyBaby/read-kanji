@@ -61,7 +61,12 @@ const UserPage = async ({ searchParams }: QueryParam) => {
                 <span className='text-base text-gray-400'>
                   {createdAt.toLocaleDateString()}
                 </span>
-                <UserAction id={id} authorId={authorId} good={good} />
+                <UserAction
+                  session={userId}
+                  id={id}
+                  authorId={authorId}
+                  good={good}
+                />
               </div>
             </li>
           )
