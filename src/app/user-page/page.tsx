@@ -1,24 +1,10 @@
+import { SerialPagination } from "@/components/ui/pagination";
 import UserAction from "@/components/UserAction";
 import prisma from "@/utils/db";
 import { ITEMS_PER_PAGE } from "@/utils/global";
 import { QueryParam } from "@/utils/types";
 import { auth } from "@clerk/nextjs/server";
-import Link from "next/link";
 import { NextResponse } from "next/server";
-import { DetailedHTMLProps, LiHTMLAttributes, ReactNode } from "react";
-
-interface Props
-  extends DetailedHTMLProps<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement> {
-  children: ReactNode;
-}
-
-const Li = (props: Props) => (
-  <li
-    {...props}
-    className='text-lg m-2 px-6 py-1 border rounded-sm bg-blue-600 text-white'>
-    {props.children}
-  </li>
-);
 
 const UserPage = async ({ searchParams }: QueryParam) => {
   const { id } = await searchParams;
@@ -72,34 +58,7 @@ const UserPage = async ({ searchParams }: QueryParam) => {
           )
         )}
       </ul>
-      <ul className='flex justify-center items-center'>
-        {[...Array(pageSize)].map((_, i) => (
-          <Link key={i} href={`user-page/?id=${i}`}>
-            {Number(id) === i ? (
-              <li className='text-lg m-2 px-6 py-1 border rounded-sm bg-yellow-200-600'>
-                今 {i}
-              </li>
-            ) : (
-              <Li>{i}</Li>
-            )}
-          </Link>
-        ))}
-        {/* {Number(id) !== 0 && (
-          <Link href={`/?id=${Number(id) - 1}`}>
-            <Li>{Number(id) - 1}</Li>
-          </Link>
-        )}
-
-        <li className='text-lg m-3 px-6 py-1 border rounded-sm bg-slate-600 text-white'>
-          {id}
-        </li>
-
-        {Number(id) !== pageSize && (
-          <Link href={`/?id=${Number(id) + 1}`}>
-            <Li>{Number(id) + 1}</Li>
-          </Link>
-        )} */}
-      </ul>
+      <SerialPagination currentPageId={Number(id)} length={pageSize} />
     </div>
   );
 };

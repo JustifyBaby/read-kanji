@@ -1,23 +1,10 @@
+import { SerialPagination } from "@/components/ui/pagination";
 import UserAction from "@/components/UserAction";
 import prisma from "@/utils/db";
 import { ITEMS_PER_PAGE } from "@/utils/global";
 import { QueryParam } from "@/utils/types";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { DetailedHTMLProps, LiHTMLAttributes, ReactNode } from "react";
-
-interface Props
-  extends DetailedHTMLProps<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement> {
-  children: ReactNode;
-}
-
-const Li = (props: Props) => (
-  <li
-    {...props}
-    className='text-lg m-2 px-6 py-1 border rounded-sm bg-blue-600 text-white'>
-    {props.children}
-  </li>
-);
 
 export default async function Home({ searchParams }: QueryParam) {
   const { id } = await searchParams;
@@ -57,7 +44,7 @@ export default async function Home({ searchParams }: QueryParam) {
               </div>
               <div className='mb-4 text-lg'>{author}氏</div>
               <div className='flex justify-center items-center'>
-                <span className='text-base text-gray-400'>
+                <span className='text-base text-gray-400 mx-3'>
                   {createdAt.toLocaleDateString()}
                 </span>
                 <UserAction
@@ -71,28 +58,7 @@ export default async function Home({ searchParams }: QueryParam) {
           )
         )}
       </ul>
-      <ul className='flex justify-center items-center'>
-        {[...Array(pageSize)].map((_, i) => (
-          <Link key={i} href={`/?id=${i}`}>
-            <Li>{i}</Li>
-          </Link>
-        ))}
-        {/* {Number(id) !== 0 && (
-          <Link href={`/?id=${Number(id) - 1}`}>
-            <Li>{Number(id) - 1}</Li>
-          </Link>
-        )}
-
-        <li className='text-lg m-3 px-6 py-1 border rounded-sm bg-slate-600 text-white'>
-          {id}
-        </li>
-
-        {Number(id) !== pageSize && (
-          <Link href={`/?id=${Number(id) + 1}`}>
-            <Li>{Number(id) + 1}</Li>
-          </Link>
-        )} */}
-      </ul>
+      <SerialPagination currentPageId={Number(id)} length={pageSize} />
     </div>
   );
 }

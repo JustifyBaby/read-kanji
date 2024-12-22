@@ -7,6 +7,11 @@ export type QueryParam = {
   searchParams: Promise<{ id: string }>;
 };
 
+export interface ActionParam {
+  id: string;
+  raterId: string;
+}
+
 export type ZodErrorType = {
   issues: ZodIssue[];
   name: string;
