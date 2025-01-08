@@ -3,7 +3,7 @@
 import prisma from "@/utils/db";
 import { formSchema } from "@/utils/formSchema";
 import { CreateAction, ZodErrorType } from "@/utils/types";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
@@ -13,8 +13,9 @@ export const postAction = async (
 ): Promise<CreateAction> => {
   try {
     const { userId: authorId } = await auth(); // Clerkから取得
+    const user = await currentUser();
 
-    if (!authorId) {
+    if (!authorId || !user) {
       return {
         status: "error",
         messages: ["まだ認証が済んでいないようです"],
@@ -36,6 +37,7 @@ export const postAction = async (
         author,
         authorId,
         kanji,
+        authorIcon: user.imageUrl.split("/").at(-1),
         read,
       },
     });

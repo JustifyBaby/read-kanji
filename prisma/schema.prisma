@@ -12,6 +12,7 @@ model UserRead {
   id String @id @default(uuid())
   author String
   authorId String
+  authorIcon String @default("https://kotonohaworks.com/free-icons/wp-content/uploads/kkrn_icon_user_1.png")
   kanji String
   read String
   good String[]

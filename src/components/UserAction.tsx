@@ -3,7 +3,7 @@
 import { Button } from "./ui/button";
 import TrashBox from "./icon/TrashBox";
 import { deletePost, highRated } from "@/actions/userAction";
-import { Suspense, useActionState } from "react";
+import { Suspense } from "react";
 import { ActionParam } from "@/utils/types";
 
 interface Props {
