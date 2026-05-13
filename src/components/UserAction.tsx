@@ -3,6 +3,8 @@ import { highRated } from "@/actions/userAction";
 import { Suspense } from "react";
 import { ActionParamSchema } from "@/utils/types";
 import DeleteModal from "./DeleteModal";
+import { Heart } from "lucide-react"; // アイコン使用
+import { cn } from "@/lib/utils"; // shadcnのユーティリティ関数（あれば）
 
 interface Props {
   id: string;
@@ -12,36 +14,57 @@ interface Props {
 }
 
 const UserAction = ({ session, id, authorId, good }: Props) => {
+  const isLiked = session ? good.includes(session) : false;
+
   const rateValid = () => {
     const jsonData = ActionParamSchema.safeParse({ id, raterId: session });
     if (jsonData.success) return JSON.stringify(jsonData.data);
-    console.log(jsonData.error);
     return "";
   };
 
   return (
-    <Suspense fallback={<div>削除しています...</div>}>
+    <div className="flex items-center gap-4">
       {session === authorId ? (
         <DeleteModal id={id} />
       ) : (
-        <form action={highRated} className="flex justify-center items-center">
+        <form action={highRated} className="flex items-center">
           {session ? (
-            <Button
-              className="px-4 py-2 m-3"
-              disabled={good.includes(session!)}
-              variant={good.includes(session!) ? "ghost" : "default"}
-              name="eval"
-              value={rateValid()}
-            >
-              &hearts;
-            </Button>
+            <div className="flex items-center bg-slate-50 rounded-full pl-1 pr-3 py-1 border border-slate-100 group">
+              <Button
+                type="submit"
+                variant="ghost"
+                size="icon"
+                disabled={isLiked}
+                name="eval"
+                value={rateValid()}
+                className={cn(
+                  "h-8 w-8 rounded-full transition-all",
+                  isLiked
+                    ? "text-red-500 bg-red-50"
+                    : "text-slate-400 hover:text-red-500 hover:bg-red-50",
+                )}
+              >
+                <Heart className={cn("w-4 h-4", isLiked && "fill-current")} />
+              </Button>
+              <span
+                className={cn(
+                  "text-sm font-bold ml-1",
+                  isLiked ? "text-red-600" : "text-slate-600",
+                )}
+              >
+                {good.length}
+              </span>
+            </div>
           ) : (
-            <></>
+            // 未ログイン時：数値のみ表示
+            <div className="flex items-center gap-1.5 text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+              <Heart className="w-4 h-4" />
+              <span className="text-sm font-medium">{good.length}</span>
+            </div>
           )}
-          <p>{good.length}</p>
         </form>
       )}
-    </Suspense>
+    </div>
   );
 };
 

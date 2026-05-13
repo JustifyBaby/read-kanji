@@ -2,21 +2,20 @@
 import { useActionState, useEffect, useState, useTransition } from "react";
 import { Button } from "../ui/button";
 import { choice, HEADER_HEIGHT } from "@/utils/global";
-import { Label } from "@radix-ui/react-label";
+import { Label } from "../ui/label"; // LabelコンポーネントをUIからに変更
 import { Input } from "../ui/input";
 import { postAction } from "@/actions/postAction";
 import kanjiList from "./kanji-lists.json";
 import KanjiSetting from "./KanjiSetting";
-
 import { useRouter } from "next/navigation";
 import Loading from "@/app/loading";
 import { ReadGuessSchema } from "@/utils/formSchema";
-
-// RHF関連のインポート
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@clerk/nextjs";
+import { RefreshCw, Send, User, BookOpen } from "lucide-react"; // アイコン追加
+import { Card, CardContent } from "../ui/card";
 
 type FormValues = z.infer<typeof ReadGuessSchema>;
 
@@ -27,7 +26,6 @@ const Create = () => {
   const [isPendingTransition, startTransition] = useTransition();
   const { userId: session } = useAuth();
 
-  // 1. RHFの初期化
   const {
     register,
     handleSubmit,
@@ -35,11 +33,7 @@ const Create = () => {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(ReadGuessSchema),
-    defaultValues: {
-      author: "",
-      kanji: "",
-      read: "",
-    },
+    defaultValues: { author: "", kanji: "", read: "" },
   });
 
   const genPhrase = () => {
@@ -51,16 +45,13 @@ const Create = () => {
   useEffect(() => {
     const newChar = genPhrase();
     setChar(newChar);
-    setValue("kanji", newChar); // RHFのコンテキストにも値を反映
+    setValue("kanji", newChar);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 2. Action State の設定
   const [state, action, isPendingAction] = useActionState(postAction, {
     status: "init",
   });
-
-  // ローディング状態の統合
   const isPending = isPendingAction || isPendingTransition;
 
   useEffect(() => {
@@ -69,91 +60,133 @@ const Create = () => {
     }
   }, [state, router]);
 
-  // 3. 送信ハンドラー
   const onSubmit = (data: FormValues) => {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-
-    startTransition(() => {
-      action(formData);
-    });
+    Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+    startTransition(() => action(formData));
   };
 
   return (
     <div
-      className={`flex flex-col items-center justify-center w-screen h-[calc(100vh-${HEADER_HEIGHT}px)] overflow-hidden`}
+      className="flex flex-col items-center justify-center w-full min-h-screen bg-slate-50/50 px-4"
+      style={{ minHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
     >
-      <KanjiSetting lenState={{ len, setLen }} />
-      {isPending ? (
-        <Loading />
-      ) : (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col justify-center items-center"
-        >
-          <div className="flex justify-center items-center">
-            <Label>お名前</Label>
-            <Input type="text" {...register("author")} />
-          </div>
-          {errors.author && (
-            <p className="text-red-500 text-xs">{errors.author.message}</p>
-          )}
+      <div className="w-full max-w-md space-y-6">
+        <KanjiSetting lenState={{ len, setLen }} />
 
-          <div className="flex flex-col justify-center items-center">
-            <input
-              type="text"
-              {...register("kanji")}
-              value={char}
-              readOnly
-              className="text-center text-2xl font-bold p-3 m-1 mt-3 outline-none"
-            />
-            <Button
-              type="button"
-              onClick={() => {
-                const newChar = genPhrase();
-                setChar(newChar);
-                setValue("kanji", newChar);
-              }}
-              className="mb-4"
-              variant={"outline"}
-            >
-              変える
-            </Button>
+        {isPending ? (
+          <div className="flex flex-col items-center gap-4">
+            <Loading />
+            <p className="text-sm text-muted-foreground animate-pulse">
+              送信中...
+            </p>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <Card className="shadow-xl border-none bg-white/80 backdrop-blur-md">
+              <CardContent className="pt-8 space-y-8">
+                {/* 1. お名前入力 */}
+                <div className="space-y-2 text-center">
+                  <div className="flex items-center justify-center gap-2 text-slate-500 mb-1">
+                    <User className="w-4 h-4" />
+                    <Label htmlFor="author" className="text-sm font-medium">
+                      出題者名
+                    </Label>
+                  </div>
+                  <Input
+                    {...register("author")}
+                    placeholder="名前を入力"
+                    className="text-center bg-slate-100/50 border-none focus-visible:ring-slate-300"
+                  />
+                  {errors.author && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.author.message}
+                    </p>
+                  )}
+                </div>
 
-          <div className="flex justify-center items-center">
-            <Label>読み</Label>
-            <Input type="text" {...register("read")} />
-          </div>
-          {errors.read && (
-            <p className="text-red-500 text-xs">{errors.read.message}</p>
-          )}
+                {/* 2. 漢字メイン表示 */}
+                <div className="flex flex-col items-center gap-4 py-4">
+                  <div className="relative group">
+                    <input
+                      type="text"
+                      {...register("kanji")}
+                      value={char}
+                      readOnly
+                      className="text-center text-6xl font-serif font-bold p-4 bg-transparent border-b-2 border-slate-200 outline-none tracking-widest text-slate-800"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const newChar = genPhrase();
+                      setChar(newChar);
+                      setValue("kanji", newChar);
+                    }}
+                    className="text-slate-400 hover:text-slate-600 gap-2 transition-all"
+                  >
+                    <RefreshCw className="w-4 h-4" /> 漢字を変える
+                  </Button>
+                </div>
 
-          <div className="flex flex-col justify-center items-center">
-            <Button
-              type="submit"
-              className="px-6 py-2 m-5 bg-slate-600"
-              disabled={isPending || !session}
-            >
-              送信
-            </Button>
-            {!session && (
-              <p className="text-red-600">まだ認証が済んでいないようです。</p>
-            )}
-          </div>
+                {/* 3. 読み入力 */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-center gap-2 text-slate-500 mb-1">
+                    <BookOpen className="w-4 h-4" />
+                    <Label htmlFor="read" className="text-sm font-medium">
+                      正しい読み
+                    </Label>
+                  </div>
+                  <Input
+                    {...register("read")}
+                    placeholder="読み方を入力"
+                    className="text-center text-xl h-14 border-slate-200 focus-visible:ring-slate-400"
+                  />
+                  {errors.read && (
+                    <p className="text-red-500 text-xs text-center">
+                      {errors.read.message}
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* サーバーサイド・クライアントサイド両方のエラー表示 */}
-          <ul>
-            {state.messages?.map((msg, key) => (
-              <li key={key} className="text-red-600">
-                {msg}
-              </li>
-            ))}
-          </ul>
-        </form>
-      )}
+            {/* 4. アクションエリア */}
+            <div className="flex flex-col items-center gap-3">
+              <Button
+                type="submit"
+                className="w-full h-14 text-lg font-bold bg-slate-800 hover:bg-slate-700 shadow-lg transition-transform active:scale-95 gap-2"
+                disabled={isPending || !session}
+              >
+                <Send className="w-5 h-5" />
+                {session ? "この漢字を登録する" : "ログインしてください"}
+              </Button>
+
+              {!session && (
+                <p className="text-amber-600 text-sm font-medium bg-amber-50 px-4 py-2 rounded-full">
+                  ⚠️ 投稿するにはログインが必要です
+                </p>
+              )}
+
+              {/* サーバーエラーメッセージ */}
+              {state.messages && (
+                <ul className="w-full bg-red-50 p-3 rounded-lg border border-red-100">
+                  {state.messages.map((msg, key) => (
+                    <li
+                      key={key}
+                      className="text-red-600 text-xs text-center font-medium"
+                    >
+                      {msg}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 };
