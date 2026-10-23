@@ -7,6 +7,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 import { UserCircle, Calendar } from "lucide-react"; // アイコン追加
+import ShareButtons from "@/components/ShareButton";
 
 export default async function Home({ searchParams }: QueryParam) {
   const { id } = await searchParams;
@@ -109,11 +110,13 @@ export default async function Home({ searchParams }: QueryParam) {
                 authorId={content.authorId}
                 good={content.good}
               />
-            </div>
 
-            {/**
-             * will impl share with X
-             */}
+              <ShareButtons
+                read={content.read}
+                authorName={content.authorName}
+                kanji={content.kanji}
+              />
+            </div>
           </li>
         ))}
       </ul>

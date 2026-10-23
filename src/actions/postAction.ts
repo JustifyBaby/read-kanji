@@ -2,6 +2,7 @@
 
 import prisma from "@/utils/db";
 import { ReadGuessSchema } from "@/utils/formSchema";
+import { zFormGetter } from "barikata";
 import { IS_DEV } from "@/utils/global";
 import { CreateAction } from "@/utils/types";
 import { auth } from "@clerk/nextjs/server";
@@ -22,15 +23,17 @@ export const postAction = async (
       };
     }
 
-    const kanjiData = fd.get("kanji")?.toString();
-    const readData = fd.get("read")?.toString();
-    const authorData = fd.get("author")?.toString();
+    const { parsed: readGuess } = zFormGetter(fd, ReadGuessSchema);
 
-    const readGuess = ReadGuessSchema.safeParse({
-      kanji: kanjiData,
-      read: readData,
-      author: authorData,
-    });
+    // const kanjiData = fd.get("kanji")?.toString();
+    // const readData = fd.get("read")?.toString();
+    // const authorData = fd.get("author")?.toString();
+
+    // const readGuess = ReadGuessSchema.safeParse({
+    //   kanji: kanjiData,
+    //   read: readData,
+    //   author: authorData,
+    // });
 
     if (!readGuess.success) {
       if (IS_DEV) console.log(z.treeifyError(readGuess.error));

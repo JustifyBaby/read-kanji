@@ -68,12 +68,10 @@ const Create = () => {
 
   return (
     <div
-      className="flex flex-col items-center justify-center w-full min-h-screen bg-slate-50/50 px-4"
-      style={{ minHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
+      className="flex flex-col items-center w-full min-h-screen bg-slate-50/50 px-4 pb-8"
+      style={{ paddingTop: HEADER_HEIGHT + 24 }}
     >
       <div className="w-full max-w-md space-y-6">
-        <KanjiSetting lenState={{ len, setLen }} />
-
         {isPending ? (
           <div className="flex flex-col items-center gap-4">
             <Loading />
@@ -90,10 +88,11 @@ const Create = () => {
                   <div className="flex items-center justify-center gap-2 text-slate-500 mb-1">
                     <User className="w-4 h-4" />
                     <Label htmlFor="author" className="text-sm font-medium">
-                      出題者名
+                      公開される名前
                     </Label>
                   </div>
                   <Input
+                    id="author"
                     {...register("author")}
                     placeholder="名前を入力"
                     className="text-center bg-slate-100/50 border-none focus-visible:ring-slate-300"
@@ -107,13 +106,16 @@ const Create = () => {
 
                 {/* 2. 漢字メイン表示 */}
                 <div className="flex flex-col items-center gap-4 py-4">
-                  <div className="relative group">
+                  <KanjiSetting lenState={{ len, setLen }} />
+
+                  <div className="relative group w-full min-w-0">
                     <input
                       type="text"
                       {...register("kanji")}
                       value={char}
                       readOnly
-                      className="text-center text-6xl font-serif font-bold p-4 bg-transparent border-b-2 border-slate-200 outline-none tracking-widest text-slate-800"
+                      aria-label="生成された漢字"
+                      className="block w-full min-w-0 text-center text-4xl sm:text-6xl font-serif font-bold px-0 py-4 bg-transparent border-b-2 border-slate-200 outline-none tracking-widest text-slate-800"
                     />
                   </div>
                   <Button
@@ -136,10 +138,11 @@ const Create = () => {
                   <div className="flex items-center justify-center gap-2 text-slate-500 mb-1">
                     <BookOpen className="w-4 h-4" />
                     <Label htmlFor="read" className="text-sm font-medium">
-                      正しい読み
+                      思いついた読み方
                     </Label>
                   </div>
                   <Input
+                    id="read"
                     {...register("read")}
                     placeholder="読み方を入力"
                     className="text-center text-xl h-14 border-slate-200 focus-visible:ring-slate-400"
